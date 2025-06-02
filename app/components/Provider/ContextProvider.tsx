@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import GlobalSytlesProvider from './GlobalSytlesProvider'
 import { GlobalContextProvider } from '@/app/context/globalContextProvider'
 
@@ -9,6 +9,16 @@ interface Props {
 }
 
 const ContextProvider = ({ children }: Props) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <GlobalContextProvider>
       <GlobalSytlesProvider>

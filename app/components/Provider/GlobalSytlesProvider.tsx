@@ -1,6 +1,6 @@
 "use client"
 
-import React from 'react'
+import React, { useEffect, useState } from 'react'
 import styled from 'styled-components'
 
 interface Props {
@@ -8,6 +8,16 @@ interface Props {
 }
 
 const GlobalSytlesProvider = ({ children }: Props) => {
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => {
+    setMounted(true);
+  }, []);
+
+  if (!mounted) {
+    return null;
+  }
+
   return (
     <GlobalStyles>{children}</GlobalStyles>
   )

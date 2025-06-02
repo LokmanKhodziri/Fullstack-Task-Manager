@@ -3,13 +3,23 @@
 import React from 'react'
 import styled from 'styled-components'
 import { useGlobalState } from '../context/globalContextProvider'
+import Image from 'next/image'
 
 const Sidebar = () => {
 
     const {theme} = useGlobalState();
 
   return (
-    <SidebarStyled theme={theme}>Sidebar</SidebarStyled>
+    <SidebarStyled theme={theme}>
+      <div className="profile">
+        <div className="profile-overlay"></div>
+        <Image width={70} height={70} src="https://avatar.iran.liara.run/public/46" alt="profile"/>
+      </div>
+      <h1>
+        <span>Akon</span>
+        <span>Icon</span>
+      </h1>
+    </SidebarStyled>
   )
 }
 
