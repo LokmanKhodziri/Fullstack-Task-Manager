@@ -39,6 +39,7 @@ const Sidebar = () => {
 
           return (
             <li
+              key={link}
               className={`nav-item ${pathname === link ? "active" : ""}`}
               onClick={() => {
                 handleClick(item.link);
@@ -60,7 +61,8 @@ const SidebarStyled = styled.nav`
   background-color: ${(props) => props.theme.colorBg2};
   border-right: 2px solid ${(props) => props.theme.borderColor2};
   border-radius: 1rem;
-  height: 100vh;
+  height: 100%;
+  width: 35vh;
   display: flex;
   flex-direction: column;
   justify-content: space-between;
