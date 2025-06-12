@@ -3,15 +3,18 @@
 import React from "react";
 import Sidebar from "./Sidebar";
 import ContextProvider from "./Provider/ContextProvider";
+import { useAuth } from "@clerk/nextjs";
 
 interface Props {
   children: React.ReactNode;
 }
 
 function ClientLayout({ children }: Props) {
+  const { userId } = useAuth();
+
   return (
     <ContextProvider>
-      <Sidebar />
+      {userId && <Sidebar />}
       <div className="w-full">{children}</div>
     </ContextProvider>
   );
