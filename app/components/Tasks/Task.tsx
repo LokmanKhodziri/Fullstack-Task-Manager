@@ -1,13 +1,18 @@
-"use client";
+'use client';
 
-import { useGlobalState } from "@/app/context/globalContextProvider";
-import React from "react";
-import styled from "styled-components";
+import { useGlobalState } from '@/app/context/globalContextProvider';
+import React from 'react';
+import styled from 'styled-components';
+import CreateContent from '../Modals/CreateContent';
 
 function Tasks() {
   const { theme } = useGlobalState();
 
-  return <TaskStyled theme={theme}>Tasks</TaskStyled>;
+  return (
+    <TaskStyled theme={theme}>
+      <CreateContent />
+    </TaskStyled>
+  );
 }
 
 const TaskStyled = styled.main`
