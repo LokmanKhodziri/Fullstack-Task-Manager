@@ -1,10 +1,12 @@
-'use clinet';
+'use client';
 
-import React, { useContext, useState } from 'react';
+import axios from 'axios';
+import React, { useState } from 'react';
+import toast from 'react-hot-toast';
 
 function CreateContent() {
-  const [title, setTitle] = useState();
-  const [description, setDesciption] = useState();
+  const [title, setTitle] = useState('');
+  const [description, setDesciption] = useState('');
   const [date, setDate] = useState();
   const [completed, setCompleted] = useState(false);
   const [important, setImportant] = useState(false);
@@ -33,8 +35,43 @@ function CreateContent() {
     }
   };
 
+  const handleSubmit = async (e: any) => {
+    e.preventDefault();
+
+    // Validate required fields
+    if (!title || !description || !date) {
+      toast.error('Please fill in all required fields');
+      return;
+    }
+
+    if (title.length < 3) {
+      toast.error('Title must be at least 3 characters long');
+      return;
+    }
+
+    const task = {
+      title,
+      description,
+      date,
+      completed,
+      important,
+    };
+
+    try {
+      const res = await axios.post('/api/tasks', task);
+
+      if (res.data.error) {
+        toast.error(res.data.error);
+        return;
+      }
+      toast.success('Task Created Successfully!');
+    } catch (error: any) {
+      toast.error(error.response?.data?.message || 'Something went wrong!');
+    }
+  };
+
   return (
-    <div>
+    <form onSubmit={handleSubmit}>
       <h1>Create Content</h1>
       <div className="input-control">
         <label htmlFor="title">Title</label>
@@ -92,7 +129,7 @@ function CreateContent() {
       <div className="submit-btn">
         <button type="submit">Submit</button>
       </div>
-    </div>
+    </form>
   );
 }
 

@@ -61,3 +61,59 @@ next-env.d.ts
 
 # OS
 Thumbs.db
+
+# Additional patterns
+# Build output
+dist/
+build/
+
+# Cache
+.cache/
+.npm/
+
+# Logs
+logs/
+*.log
+
+# Local development
+*.local
+
+# Temporary files
+*.tmp
+*.temp
+.DS_Store
+.env.local
+.env.development.local
+.env.test.local
+.env.production.local
+
+# Coverage directory used by tools like istanbul
+coverage/
+
+# Optional npm cache directory
+.npm
+
+# Optional eslint cache
+.eslintcache
+
+# Optional stylelint cache
+.stylelintcache
+
+# Yarn Integrity file
+.yarn-integrity
+
+# TypeScript cache
+*.tsbuildinfo
+
+# Optional REPL history
+.node_repl_history
+
+# Output of 'npm pack'
+*.tgz
+
+# Yarn v2
+.yarn/cache
+.yarn/unplugged
+.yarn/build-state.yml
+.yarn/install-state.gz
+.pnp.*
