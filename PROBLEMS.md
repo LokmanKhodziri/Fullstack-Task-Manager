@@ -125,6 +125,30 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
    };
    ```
 
+## 7. MongoDB Paused / userId Not Recognized
+
+### Problem
+
+- Tasks were not displaying in the app.
+- The backend could not recognize or retrieve the `userId`.
+- The root cause was that the MongoDB database was in a "paused" state (common with free-tier cloud MongoDB services like Atlas), so connections and queries failed.
+
+### Solution
+
+1. **Resume MongoDB Cluster:**
+   - Logged into the MongoDB Atlas dashboard.
+   - Located the paused cluster and clicked "Resume" to restart the database.
+2. **Verify Database Connection:**
+   - Ensured the backend could connect to MongoDB (no connection errors in logs).
+   - Confirmed that the `userId` could be retrieved and used in queries.
+3. **Check Application:**
+   - Reloaded the app and verified that tasks were now displaying correctly for the authenticated user.
+
+### Notes
+
+- Free-tier MongoDB clusters may pause after periods of inactivity. Always check the cluster status if you encounter unexplained database or authentication issues.
+- Consider upgrading or using a local MongoDB instance for development to avoid interruptions.
+
 ## Best Practices Implemented
 
 1. **Error Handling**

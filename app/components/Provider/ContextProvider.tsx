@@ -1,11 +1,12 @@
-"use client"
+'use client';
 
-import React, { useEffect, useState } from 'react'
-import GlobalSytlesProvider from './GlobalSytlesProvider'
-import { GlobalContextProvider } from '@/app/context/globalContextProvider'
+import React, { useEffect, useState } from 'react';
+import GlobalSytlesProvider from './GlobalSytlesProvider';
+import { GlobalContextProvider } from '@/app/context/globalContextProvider';
+import { Toaster } from 'react-hot-toast';
 
 interface Props {
-    children: React.ReactNode
+  children: React.ReactNode;
 }
 
 const ContextProvider = ({ children }: Props) => {
@@ -21,11 +22,10 @@ const ContextProvider = ({ children }: Props) => {
 
   return (
     <GlobalContextProvider>
-      <GlobalSytlesProvider>
-        {children}
-      </GlobalSytlesProvider>
+      <Toaster />
+      <GlobalSytlesProvider>{children}</GlobalSytlesProvider>
     </GlobalContextProvider>
-  )
-}
+  );
+};
 
-export default ContextProvider
+export default ContextProvider;

@@ -4,13 +4,34 @@ import { useGlobalState } from '@/app/context/globalContextProvider';
 import React from 'react';
 import styled from 'styled-components';
 import CreateContent from '../Modals/CreateContent';
+import TaskItem from '../TaskItem/TaskItem';
 
-function Tasks() {
+interface Props {
+  title?: string;
+  tasks?: any[];
+}
+
+function Tasks({title, tasks}: Props) {
   const { theme } = useGlobalState();
 
   return (
     <TaskStyled theme={theme}>
-      <CreateContent />
+      <h1>
+        {title}
+      </h1>
+      <div className="tasks grid">
+        {tasks && tasks.length > 0 ? (
+          tasks.map((task) => (
+            <TaskItem
+              key={task.id}
+              task={{...task}}
+              theme={theme}
+            />
+           ) )
+        ) : (
+          <p>No tasks available</p>
+        )}
+      </div>
     </TaskStyled>
   );
 }
