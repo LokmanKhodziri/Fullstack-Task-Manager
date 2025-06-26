@@ -54,6 +54,10 @@ const TaskStyled = styled.main`
     width: 0.5rem;
   }
 
+  .tasks {
+    margin: 2rem 0;
+  }
+
   > h1 {
     font-size: clamp(1.5rem, 2vw, 2rem);
     font-weight: 600;
