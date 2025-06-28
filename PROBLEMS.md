@@ -24,14 +24,19 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 ### Solution
 
 1. Installed Prisma client:
+
    ```bash
    npm install @prisma/client
    ```
+
 2. Generated Prisma client:
+
    ```bash
    npx prisma generate
    ```
+
 3. Updated import path in `app/utils/connect.ts`:
+
    ```typescript
    import { PrismaClient } from '../../generated/prisma';
    ```
@@ -46,20 +51,25 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 ### Solution
 
 1. Added client-side validation:
+
    ```typescript
    if (!title || !description || !date) {
      toast.error('Please fill in all required fields');
      return;
    }
    ```
+
 2. Added title length validation:
+
    ```typescript
    if (title.length < 3) {
      toast.error('Title must be at least 3 characters long');
      return;
    }
    ```
+
 3. Improved error handling in API calls:
+
    ```typescript
    catch (error: any) {
      console.error('Error details:', error.response?.data || error.message);
@@ -78,6 +88,7 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 
 1. Updated API endpoint from `api/task/tasks` to `/api/tasks`
 2. Added authentication checks in API route:
+
    ```typescript
    const { userId } = await auth();
    if (!userId) {
@@ -95,6 +106,7 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 ### Solution
 
 1. Initialized state with proper default values:
+
    ```typescript
    const [title, setTitle] = useState('');
    const [description, setDescription] = useState('');
@@ -113,12 +125,15 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 ### Solution
 
 1. Added proper type definitions for event handlers:
+
    ```typescript
    const handleChange = (name: string) => (e: any) => {
      // ... handler implementation
    };
    ```
+
 2. Added type for form submission:
+
    ```typescript
    const handleSubmit = async (e: any) => {
      // ... submit implementation
@@ -148,6 +163,42 @@ Error: @prisma/client did not initialize yet. Please run "prisma generate" and t
 
 - Free-tier MongoDB clusters may pause after periods of inactivity. Always check the cluster status if you encounter unexplained database or authentication issues.
 - Consider upgrading or using a local MongoDB instance for development to avoid interruptions.
+
+## 8. Sidebar Not Loading & NextRouter Not Mounted Error
+
+### Problem
+
+- The sidebar component was not rendering, and the following error appeared:
+
+  ```
+  Error: NextRouter was not mounted. https://nextjs.org/docs/messages/next-router-not-mounted
+  ```
+
+- The sidebar would only show a loading state and never render the actual content.
+
+### Root Cause
+
+- The `Sidebar` component was using a `mounted` flag from the global context to delay rendering until the client was ready.
+- However, the `useRouter` and `usePathname` hooks from Next.js were being called before the component was mounted, which caused the "NextRouter was not mounted" error.
+- Additionally, the context did not provide an `isThemeLoaded` flag, but the code was checking for it, causing the sidebar to never render.
+
+### Solution
+
+1. Updated the context to use the `mounted` flag and ensured it is set to `true` after the component mounts.
+2. Moved the calls to `useRouter` and `usePathname` **after** the `mounted` check, so they are only called on the client.
+3. Replaced any usage of `isThemeLoaded` with `mounted` in the Sidebar component.
+4. Now, the sidebar renders correctly after the app is mounted, and the router hooks work without errors.
+
+#### Code Example
+
+```tsx
+const { theme, mounted } = useGlobalState();
+if (!mounted) return <div>Loading...</div>;
+
+// Only call router hooks after mounted is true
+const router = useRouter();
+const pathname = usePathname();
+```
 
 ## Best Practices Implemented
 

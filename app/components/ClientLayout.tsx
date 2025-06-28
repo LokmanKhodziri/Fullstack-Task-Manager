@@ -1,7 +1,7 @@
 "use client";
 
 import React from "react";
-import Sidebar from "./Sidebar";
+import Sidebar from "./Sidebar/Sidebar";
 import ContextProvider from "./Provider/ContextProvider";
 import { useAuth } from "@clerk/nextjs";
 

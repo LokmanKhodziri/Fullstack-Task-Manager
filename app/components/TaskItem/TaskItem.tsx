@@ -75,10 +75,10 @@ const TaskItemStyled = styled.div`
         font-size: 1.4rem;
         color: ${(props) => props.theme.colorGrey2};
       }
+    }
 
-      .edit {
-        margin-left: auto;
-      }
+    button.edit {
+      margin-left: auto;
     }
 
     .completed,

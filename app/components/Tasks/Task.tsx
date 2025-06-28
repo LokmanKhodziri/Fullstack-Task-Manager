@@ -11,16 +11,17 @@ interface Props {
   tasks?: any[];
 }
 
-function Tasks({ title, tasks }: Props) {
+function Tasks({ title, tasks = [] }: Props) {
   const { theme } = useGlobalState();
 
   return (
     <TaskStyled theme={theme}>
       <h1>{title}</h1>
       <div className="tasks grid">
-        {tasks && tasks.length > 0 ? (
+        {tasks.length > 0 ? (
           tasks.map((task) => (
             <TaskItem
+              key={task.id}
               title={task.title}
               description={task.description}
               date={task.date}

@@ -42,7 +42,7 @@ export const GlobalContextProvider = ({ children }) => {
     }
 
     return (
-        <GlobalContext.Provider value={{ theme, tasks }}>
+        <GlobalContext.Provider value={{ theme, tasks, mounted }}>
             <GlobalUpdateContext.Provider value={{ setSelectedTheme }}>
                 {children}
             </GlobalUpdateContext.Provider>

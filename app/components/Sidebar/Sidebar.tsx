@@ -2,15 +2,24 @@
 
 import React from "react";
 import styled from "styled-components";
-import { useGlobalState } from "../context/globalContextProvider";
+import { useGlobalState } from "../../context/globalContextProvider";
+import { useClerk } from '@clerk/nextjs';
 import Image from "next/image";
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
+import { DateTime } from "luxon";
+import { logout } from '@/app/utils/Icons';
 
 import menu from "@/app/utils/menu";
+import Button from "../Button/Button";
 
 const Sidebar = () => {
-  const { theme } = useGlobalState();
+  const { theme, mounted } = useGlobalState();
+  const { signOut } = useClerk();
+
+  if (!mounted) return <div>Loading...</div>;
+
+  // Only call these hooks after mounted is true
   const router = useRouter();
   const pathname = usePathname();
 
@@ -50,7 +59,17 @@ const Sidebar = () => {
           );
         })}
       </ul>
-      <button></button>
+      <div className="sign-out relative m-6">
+        <Button 
+          name={"Sign Out"}
+          type={"submit"}
+          padding={"0.4rem 0.8rem"}
+          borderRadius={"0.8rem"}
+          fw={"500"}
+          icon={logout}
+          click={() => {signOut(() => {router.push("/sign-in")})}}
+        />
+      </div>
     </SidebarStyled>
   );
 };
@@ -182,6 +201,13 @@ const SidebarStyled = styled.nav`
     }
   }
 
+  .sign-out {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 1.5rem;
+  }
+
   button {
     margin: 1.5rem;
     padding: 0.8rem;
@@ -197,5 +223,12 @@ const SidebarStyled = styled.nav`
     }
   }
 `;
+
+// In your formatDate utility, force UTC or a fixed locale
+export function formatDate(date: string | Date) {
+  return DateTime.fromISO(typeof date === 'string' ? date : date.toISOString())
+    .setZone('utc')
+    .toFormat('yyyy-MM-dd');
+}
 
 export default Sidebar;
