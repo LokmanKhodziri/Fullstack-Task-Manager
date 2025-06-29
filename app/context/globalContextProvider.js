@@ -4,7 +4,7 @@ import React, { createContext, useState, useContext, useEffect } from 'react';
 import themes from './themes';
 import axios from 'axios';
 import toast from 'react-hot-toast';
-import { setUser, useUser } from '@clerk/nextjs';
+import { useUser } from '@clerk/nextjs';
 
 export const GlobalContext = createContext();
 export const GlobalUpdateContext = createContext();
@@ -24,7 +24,6 @@ export const GlobalContextProvider = ({ children }) => {
       setTasks(res.data);
       setIsLoading(false);
     } catch (error) {
-      console.error('Failed to fetch tasks:', error);
       toast.error('Failed to fetch tasks. Please try again later.');
     }
   };
@@ -43,8 +42,6 @@ export const GlobalContextProvider = ({ children }) => {
       toast.success('Task deleted successfully');
       allTasks();
     } catch (error) {
-      console.error('Error deleting task:', error);
-
       // Provide more specific error messages
       if (error.response?.status === 401) {
         toast.error('Unauthorized. Please sign in again.');
@@ -59,6 +56,10 @@ export const GlobalContextProvider = ({ children }) => {
       setIsLoading(false);
     }
   };
+
+  const completedTasks = tasks.filter((task) => task.isCompleted === true);
+  const important = tasks.filter((task) => task.isImportant === true);
+  const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
 
   React.useEffect(() => {
     if (user) {
@@ -81,6 +82,9 @@ export const GlobalContextProvider = ({ children }) => {
         allTasks,
         mounted,
         isLoading,
+        completedTasks,
+        important,
+        incompleteTasks,
       }}
     >
       {children}
