@@ -13,9 +13,7 @@ export async function POST(req: Request) {
 
     if (!title || !description || !date) {
       return NextResponse.json(
-        {
-          error: 'Missing requred fields',
-        },
+        { error: 'Missing requred fields' },
         { status: 401 }
       );
     }
@@ -40,7 +38,6 @@ export async function POST(req: Request) {
 
     return NextResponse.json(task);
   } catch (error) {
-    console.log('ERROR CREATING TASKS:', error);
     return NextResponse.json(
       { error: 'Error Creating Tasks' },
       { status: 500 }
@@ -50,9 +47,7 @@ export async function POST(req: Request) {
 
 export async function GET(req: Request) {
   try {
-    console.log('Starting GET /api/tasks');
     const { userId } = await auth();
-    console.log('User ID:', userId);
     if (!userId) {
       return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
     }
@@ -63,10 +58,8 @@ export async function GET(req: Request) {
       },
     });
 
-    console.log('Tasks:', tasks);
     return NextResponse.json(tasks);
   } catch (error) {
-    console.log('ERROR GETTING TASK:', error);
     return NextResponse.json({ error: 'Error Getting Task' }, { status: 500 });
   }
 }
@@ -74,7 +67,6 @@ export async function GET(req: Request) {
 export async function PUT(req: Request) {
   try {
   } catch (error) {
-    console.log('ERROR UPDATING TASK:', error);
     return NextResponse.json({ error: 'Error Uptating Task' }, { status: 500 });
   }
 }
@@ -82,7 +74,6 @@ export async function PUT(req: Request) {
 export async function DELETE(req: Request) {
   try {
   } catch (error) {
-    console.log('ERROR DELETING TASK:', error);
     return NextResponse.json({ error: 'Error Deleting Task' }, { status: 500 });
   }
 }

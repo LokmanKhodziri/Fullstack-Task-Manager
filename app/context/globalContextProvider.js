@@ -78,8 +78,9 @@ export const GlobalContextProvider = ({ children }) => {
         theme,
         tasks,
         deleteTask,
+        allTasks,
         mounted,
-        isLoading, // <-- Optional: add if you use isLoading elsewhere
+        isLoading,
       }}
     >
       {children}

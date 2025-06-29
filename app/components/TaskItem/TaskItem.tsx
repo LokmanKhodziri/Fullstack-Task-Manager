@@ -36,9 +36,14 @@ function TaskItem({
           <button className="not-completed">Not Completed</button>
         )}
         <button className="edit">{edit}</button>
-        <button className="delete" onClick={() => {
-          deleteTask(id);
-        }}>{trash}</button>
+        <button
+          className="delete"
+          onClick={() => {
+            deleteTask(id);
+          }}
+        >
+          {trash}
+        </button>
       </div>
     </TaskItemStyled>
   );

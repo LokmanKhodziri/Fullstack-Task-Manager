@@ -1,10 +1,12 @@
 'use client';
 
 import { useGlobalState } from '@/app/context/globalContextProvider';
-import React from 'react';
+import React, { useState } from 'react';
 import styled from 'styled-components';
 import TaskItem from '../TaskItem/TaskItem';
 import { plus } from '@/app/utils/Icons';
+import Modal from '../Modals/Modal';
+import CreateContent from '../Modals/CreateContent';
 
 interface Props {
   title?: string;
@@ -12,8 +14,19 @@ interface Props {
 }
 
 function Tasks({ title, tasks }: Props) {
-  const { theme, isLoading } = useGlobalState();
+  const { theme, isLoading, allTasks } = useGlobalState();
+  const [isModalOpen, setIsModalOpen] = useState(false);
   const safeTasks = Array.isArray(tasks) ? tasks : [];
+
+  const openModal = () => setIsModalOpen(true);
+  const closeModal = () => setIsModalOpen(false);
+
+  const handleTaskCreated = () => {
+    // Refresh the task list
+    if (allTasks) {
+      allTasks();
+    }
+  };
 
   return (
     <TaskStyled theme={theme}>
@@ -35,16 +48,20 @@ function Tasks({ title, tasks }: Props) {
             <p>No tasks available</p>
           )}
 
-          <button className="create-task">
+          <button className="create-task" onClick={openModal}>
             {plus}
             Add New Task
           </button>
         </div>
       ) : (
         <div className="tasks-loader w-full h-full flex items-center justify-center">
-          <span className='loader'>Loading...</span>
+          <span className="loader">Loading...</span>
         </div>
       )}
+
+      <Modal isOpen={isModalOpen} onClose={closeModal}>
+        <CreateContent onClose={closeModal} onTaskCreated={handleTaskCreated} />
+      </Modal>
     </TaskStyled>
   );
 }
