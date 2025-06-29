@@ -11,6 +11,7 @@ interface Props {
   description: string;
   date: string;
   isCompleted: boolean;
+  important?: boolean;
   id: string;
 }
 

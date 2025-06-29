@@ -3,6 +3,7 @@ import { ClerkProvider } from "@clerk/nextjs";
 import { Nunito } from "next/font/google";
 import "./globals.css";
 import ClientLayout from "./components/ClientLayout";
+import NextTopLoader from "nextjs-toploader";
 
 const nunito = Nunito({
   variable: "--font-nunito",
@@ -35,6 +36,12 @@ export default function RootLayout({
         </head>
         <body
           className={`${nunito.className} antialiased`}>
+            <NextTopLoader
+              height={2}
+              color="#27ae60"
+              easing="cubic-bezier(0.53, 0.21, 0, 1)"
+              showSpinner={false}
+            />
           <ClientLayout>{children}</ClientLayout>
         </body>
       </html>

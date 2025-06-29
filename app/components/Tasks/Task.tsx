@@ -11,15 +11,16 @@ interface Props {
   tasks?: any[];
 }
 
-function Tasks({ title, tasks = [] }: Props) {
+function Tasks({ title, tasks }: Props) {
   const { theme } = useGlobalState();
+  const safeTasks = Array.isArray(tasks) ? tasks : [];
 
   return (
     <TaskStyled theme={theme}>
       <h1>{title}</h1>
       <div className="tasks grid">
-        {tasks.length > 0 ? (
-          tasks.map((task) => (
+        {safeTasks.length > 0 ? (
+          safeTasks.map((task) => (
             <TaskItem
               key={task.id}
               title={task.title}
