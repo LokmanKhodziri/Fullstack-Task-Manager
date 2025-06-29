@@ -200,6 +200,130 @@ const router = useRouter();
 const pathname = usePathname();
 ```
 
+## 9. DeleteTask Error Handling & Next.js 15 Async Params
+
+### Problem
+
+- The `deleteTask` function was showing generic "Something went wrong" error messages
+- Users couldn't understand what specifically failed when deleting tasks
+- The function was calling the wrong API endpoint (`/api/tasks/${id}` instead of `/api/${id}`)
+- Next.js 15 introduced a new requirement where `params` must be awaited before accessing properties
+
+### Root Cause
+
+1. **Incorrect API Endpoint**: The delete function was calling `/api/tasks/${id}` but the actual DELETE endpoint is at `/api/[id]/route.ts`
+2. **Poor Error Handling**: Generic error messages didn't provide actionable feedback
+3. **Loading State Issues**: `setIsLoading(false)` wasn't called in error cases
+4. **Next.js 15 Compatibility**: `params` object is now a Promise and must be awaited
+
+### Solution
+
+#### 1. Fixed API Endpoint URL
+
+**Before:**
+
+```javascript
+const res = await axios.delete(`/api/tasks/${id}`);
+```
+
+**After:**
+
+```javascript
+const res = await axios.delete(`/api/${id}`);
+```
+
+#### 2. Improved Error Handling
+
+**Before:**
+
+```javascript
+catch (error) {
+    console.log(error);
+    toast.error("Something went wrong");
+}
+```
+
+**After:**
+
+```javascript
+catch (error) {
+    console.error("Error deleting task:", error);
+
+    // Provide more specific error messages
+    if (error.response?.status === 401) {
+        toast.error("Unauthorized. Please sign in again.");
+    } else if (error.response?.status === 404) {
+        toast.error("Task not found or already deleted.");
+    } else if (error.response?.data?.error) {
+        toast.error(error.response.data.error);
+    } else {
+        toast.error("Failed to delete task. Please try again.");
+    }
+
+    setIsLoading(false);
+}
+```
+
+#### 3. Enhanced API Endpoint
+
+**Before:**
+
+```typescript
+export async function DELETE(
+  req: Request,
+  { params }: { params: { id: string } }
+) {
+  // Direct deletion without checking if task exists
+}
+```
+
+**After:**
+
+```typescript
+export async function DELETE(
+  req: Request,
+  { params }: { params: Promise<{ id: string }> }
+) {
+  const { id } = await params; // Next.js 15 async params requirement
+
+  // Check if task exists before deleting
+  const existingTask = await prisma.task.findFirst({
+    where: { id, userId },
+  });
+
+  if (!existingTask) {
+    return NextResponse.json({ error: 'Task not found' }, { status: 404 });
+  }
+
+  // Handle specific Prisma errors
+  if (error.code === 'P2025') {
+    return NextResponse.json(
+      { error: 'Task not found or already deleted' },
+      { status: 404 }
+    );
+  }
+}
+```
+
+#### 4. Fixed Loading State Management
+
+- Added `setIsLoading(false)` in the catch block to ensure loading state is properly reset
+- Added early return with `setIsLoading(false)` when API returns an error
+
+### Benefits
+
+1. **Better User Experience**: Users get specific, actionable error messages
+2. **Proper Error Recovery**: Loading state is properly reset even when errors occur
+3. **Robust API**: Backend checks if tasks exist before attempting deletion
+4. **Next.js 15 Compatibility**: Works with the latest Next.js async params requirement
+5. **Better Debugging**: More detailed error logging for developers
+
+### Notes
+
+- Always check the actual API route structure when debugging endpoint issues
+- Next.js 15 requires `params` to be awaited before accessing properties
+- Consider implementing proper error boundaries for better error handling across the app
+
 ## Best Practices Implemented
 
 1. **Error Handling**

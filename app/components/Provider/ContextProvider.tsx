@@ -17,7 +17,9 @@ const ContextProvider = ({ children }: Props) => {
   }, []);
 
   if (!mounted) {
-    return null;
+    return <div className='w-full h-screen flex items-center justify-center'>
+      <span className="loader"></span>
+    </div>;
   }
 
   return (
