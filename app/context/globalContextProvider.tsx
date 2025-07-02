@@ -1,34 +1,75 @@
 'use client';
 
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, {
+  createContext,
+  useState,
+  useContext,
+  useEffect,
+  ReactNode,
+} from 'react';
 import themes from './themes';
 import axios from 'axios';
 import toast from 'react-hot-toast';
 import { useUser } from '@clerk/nextjs';
 
-export const GlobalContext = createContext();
-export const GlobalUpdateContext = createContext();
+// Define types
+interface Task {
+  id: string;
+  title: string;
+  description: string;
+  date: string;
+  isCompleted: boolean;
+  isImportant: boolean;
+  userId: string;
+  createAt: string;
+  updatedAt: string;
+}
 
-export const GlobalContextProvider = ({ children }) => {
+interface GlobalContextType {
+  theme: any;
+  tasks: Task[];
+  deleteTask: (id: string) => Promise<void>;
+  allTasks: () => Promise<void>;
+  mounted: boolean;
+  isLoading: boolean;
+  completedTasks: Task[];
+  important: Task[];
+  incompleteTasks: Task[];
+}
+
+interface GlobalContextProviderProps {
+  children: ReactNode;
+}
+
+// Create context with proper typing
+export const GlobalContext = createContext<GlobalContextType | undefined>(
+  undefined
+);
+export const GlobalUpdateContext = createContext<any>(undefined);
+
+export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
+  children,
+}) => {
   const { user } = useUser();
   const [selectedTheme, setSelectedTheme] = useState(0);
   const [isLoading, setIsLoading] = useState(true);
-  const [tasks, setTasks] = useState([]);
+  const [tasks, setTasks] = useState<Task[]>([]);
   const [mounted, setMounted] = useState(false);
 
-  const allTasks = async () => {
+  const allTasks = async (): Promise<void> => {
     setIsLoading(true);
     try {
       const res = await axios.get('/api/tasks');
-
       setTasks(res.data);
       setIsLoading(false);
     } catch (error) {
+      console.error('Failed to fetch tasks:', error);
       toast.error('Failed to fetch tasks. Please try again later.');
+      setIsLoading(false);
     }
   };
 
-  const deleteTask = async (id) => {
+  const deleteTask = async (id: string): Promise<void> => {
     setIsLoading(true);
     try {
       const res = await axios.delete(`/api/${id}`);
@@ -41,7 +82,9 @@ export const GlobalContextProvider = ({ children }) => {
 
       toast.success('Task deleted successfully');
       allTasks();
-    } catch (error) {
+    } catch (error: any) {
+      console.error('Error deleting task:', error);
+
       // Provide more specific error messages
       if (error.response?.status === 401) {
         toast.error('Unauthorized. Please sign in again.');
@@ -57,6 +100,7 @@ export const GlobalContextProvider = ({ children }) => {
     }
   };
 
+  // Filter tasks
   const completedTasks = tasks.filter((task) => task.isCompleted === true);
   const important = tasks.filter((task) => task.isImportant === true);
   const incompleteTasks = tasks.filter((task) => task.isCompleted === false);
@@ -92,7 +136,15 @@ export const GlobalContextProvider = ({ children }) => {
   );
 };
 
-export const useGlobalState = () => useContext(GlobalContext);
+export const useGlobalState = (): GlobalContextType => {
+  const context = useContext(GlobalContext);
+  if (context === undefined) {
+    throw new Error(
+      'useGlobalState must be used within a GlobalContextProvider'
+    );
+  }
+  return context;
+};
 
 export const useGlobalUpdate = () => {
   return useContext(GlobalUpdateContext);

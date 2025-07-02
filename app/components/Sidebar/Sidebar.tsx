@@ -1,17 +1,17 @@
-"use client";
+'use client';
 
-import React from "react";
-import styled from "styled-components";
-import { useGlobalState } from "../../context/globalContextProvider";
-import { useClerk } from '@clerk/nextjs';
-import Image from "next/image";
-import Link from "next/link";
-import { usePathname, useRouter } from "next/navigation";
-import { DateTime } from "luxon";
+import React from 'react';
+import styled from 'styled-components';
+import { useGlobalState } from '../../context/globalContextProvider';
+import { useClerk, UserButton, useUser } from '@clerk/nextjs';
+import Link from 'next/link';
+import { usePathname, useRouter } from 'next/navigation';
+import { DateTime } from 'luxon';
 import { logout } from '@/app/utils/Icons';
+import { useState } from 'react';
 
-import menu from "@/app/utils/menu";
-import Button from "../Button/Button";
+import menu from '@/app/utils/menu';
+import Button from '../Button/Button';
 
 const Sidebar = () => {
   const { theme, mounted } = useGlobalState();
@@ -20,6 +20,10 @@ const Sidebar = () => {
   if (!mounted) return <div>Loading...</div>;
 
   // Only call these hooks after mounted is true
+
+  const { user } = useUser();
+  const { firstName, lastName } = user || { firstName: '', lastName: '' };
+
   const router = useRouter();
   const pathname = usePathname();
 
@@ -30,16 +34,10 @@ const Sidebar = () => {
   return (
     <SidebarStyled theme={theme}>
       <div className="profile">
-        <div className="profile-overlay"></div>
-        <Image
-          width={70}
-          height={70}
-          src="https://avatar.iran.liara.run/public/46"
-          alt="profile"
-        />
+        <UserButton />
         <h1>
-          <span>Akon</span>
-          <span>Icon</span>
+          <span>{firstName || 'User'}</span>
+          <span>{lastName || ''}</span>
         </h1>
       </div>
       <ul className="nav-items">
@@ -49,10 +47,11 @@ const Sidebar = () => {
           return (
             <li
               key={link}
-              className={`nav-item ${pathname === link ? "active" : ""}`}
+              className={`nav-item ${pathname === link ? 'active' : ''}`}
               onClick={() => {
                 handleClick(item.link);
-              }}>
+              }}
+            >
               {item.icon}
               <Link href={link}>{item.title}</Link>
             </li>
@@ -60,14 +59,18 @@ const Sidebar = () => {
         })}
       </ul>
       <div className="sign-out relative m-6">
-        <Button 
-          name={"Sign Out"}
-          type={"submit"}
-          padding={"0.4rem 0.8rem"}
-          borderRadius={"0.8rem"}
-          fw={"500"}
+        <Button
+          name={'Sign Out'}
+          type={'submit'}
+          padding={'0.4rem 0.8rem'}
+          borderRadius={'0.8rem'}
+          fw={'500'}
           icon={logout}
-          click={() => {signOut(() => {router.push("/sign-in")})}}
+          click={() => {
+            signOut(() => {
+              router.push('/sign-in');
+            });
+          }}
         />
       </div>
     </SidebarStyled>
@@ -99,29 +102,12 @@ const SidebarStyled = styled.nav`
     color: ${(props) => props.theme.colorGrey0};
     display: flex;
     align-items: center;
-    gap: 1rem;
+    gap: 0.3rem
     transition: all 0.3s ease;
 
-    &:hover {
-      .profile-overlay {
-        opacity: 0.3;
-      }
+    .cl-rootBox {
+      margin-left: 0.5rem;
     }
-  }
-
-  .profile-overlay {
-    position: absolute;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    backdrop-filter: blur(10px);
-    z-index: 0;
-    background: ${(props) => props.theme.colorBg3};
-    transition: all 0.3s ease;
-    border-radius: 1rem;
-    border: 2px solid ${(props) => props.theme.borderColor2};
-    opacity: 0.2;
   }
 
   h1 {
@@ -134,33 +120,6 @@ const SidebarStyled = styled.nav`
     span:last-child {
       color: ${(props) => props.theme.colorGrey3};
       font-size: 0.9rem;
-    }
-  }
-
-  .image,
-  h1 {
-    position: relative;
-    z-index: 1;
-  }
-
-  .image {
-    flex-shrink: 0;
-    display: inline-block;
-    overflow: hidden;
-    transition: all 0.3s ease;
-    border-radius: 100%;
-    width: 70px;
-    height: 70px;
-    border: 2px solid ${(props) => props.theme.borderColor2};
-
-    img {
-      border-radius: 100%;
-      transition: all 0.3s ease;
-      object-fit: cover;
-    }
-
-    &:hover {
-      transform: scale(1.05);
     }
   }
 
@@ -232,3 +191,36 @@ export function formatDate(date: string | Date) {
 }
 
 export default Sidebar;
+
+export function UpdateNameForm() {
+  const { user } = useUser();
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (user) {
+      await user.update({ firstName, lastName });
+      setMessage('Name updated!');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        First Name:
+        <input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+      </label>
+      <label>
+        Last Name:
+        <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+      </label>
+      <button type="submit">Update Name</button>
+      {message && <p>{message}</p>}
+    </form>
+  );
+}
