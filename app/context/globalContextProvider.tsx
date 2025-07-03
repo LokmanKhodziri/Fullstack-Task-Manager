@@ -36,6 +36,10 @@ interface GlobalContextType {
   important: Task[];
   incompleteTasks: Task[];
   updateTask: (id: string, isCompleted: boolean) => Promise<void>;
+  editTask: (
+    id: string,
+    updates: { title?: string; description?: string; date?: string }
+  ) => Promise<void>;
 }
 
 interface GlobalContextProviderProps {
@@ -71,13 +75,11 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
   };
 
   const deleteTask = async (id: string): Promise<void> => {
-    setIsLoading(true);
     try {
       const res = await axios.delete(`/api/${id}`);
 
       if (res.data.error) {
         toast.error(res.data.error);
-        setIsLoading(false);
         return;
       }
 
@@ -96,8 +98,6 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
       } else {
         toast.error('Failed to delete task. Please try again.');
       }
-
-      setIsLoading(false);
     }
   };
 
@@ -105,15 +105,40 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
     id: string,
     isCompleted: boolean
   ): Promise<void> => {
-    setIsLoading(true);
     try {
-      const res = await axios.put(`/api/tasks`, { id, isCompleted });
+      await axios.put(`/api/tasks`, { id, isCompleted });
+
+      // Optimistically update the task in local state
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, isCompleted } : task
+        )
+      );
 
       toast.success('Task updated successfully');
-
-      allTasks();
     } catch (error) {
       console.error('Error updating task:', error);
+      toast.error('Failed to update task. Please try again.');
+      // Optionally, re-sync with server if needed
+      // allTasks();
+    }
+  };
+
+  const editTask = async (
+    id: string,
+    updates: { title?: string; description?: string; date?: string }
+  ): Promise<void> => {
+    try {
+      await axios.put(`/api/tasks`, { id, ...updates });
+      setTasks((prevTasks) =>
+        prevTasks.map((task) =>
+          task.id === id ? { ...task, ...updates } : task
+        )
+      );
+      toast.success('Task edited successfully');
+    } catch (error) {
+      console.error('Error editing task:', error);
+      toast.error('Failed to edit task. Please try again.');
     }
   };
 
@@ -142,6 +167,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
         deleteTask,
         allTasks,
         updateTask,
+        editTask,
         mounted,
         isLoading,
         completedTasks,

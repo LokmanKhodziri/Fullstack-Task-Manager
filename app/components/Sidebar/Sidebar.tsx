@@ -77,6 +77,48 @@ const Sidebar = () => {
   );
 };
 
+// formatDate utility, force UTC or a fixed locale
+export function formatDate(date: string | Date) {
+  return DateTime.fromISO(typeof date === 'string' ? date : date.toISOString())
+    .setZone('utc')
+    .toFormat('yyyy-MM-dd');
+}
+
+export default Sidebar;
+
+export function UpdateNameForm() {
+  const { user } = useUser();
+  const [firstName, setFirstName] = useState(user?.firstName || '');
+  const [lastName, setLastName] = useState(user?.lastName || '');
+  const [message, setMessage] = useState('');
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (user) {
+      await user.update({ firstName, lastName });
+      setMessage('Name updated!');
+    }
+  };
+
+  return (
+    <form onSubmit={handleSubmit}>
+      <label>
+        First Name:
+        <input
+          value={firstName}
+          onChange={(e) => setFirstName(e.target.value)}
+        />
+      </label>
+      <label>
+        Last Name:
+        <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
+      </label>
+      <button type="submit">Update Name</button>
+      {message && <p>{message}</p>}
+    </form>
+  );
+}
+
 const SidebarStyled = styled.nav`
   position: relative;
   width: ${(props) => props.theme.sidebarWidth};
@@ -107,6 +149,11 @@ const SidebarStyled = styled.nav`
 
     .cl-rootBox {
       margin-left: 0.5rem;
+
+      .cl-internal-1j7ahlv {
+        width: 3rem;
+        height: 3rem;
+      }
     }
   }
 
@@ -182,45 +229,3 @@ const SidebarStyled = styled.nav`
     }
   }
 `;
-
-// In your formatDate utility, force UTC or a fixed locale
-export function formatDate(date: string | Date) {
-  return DateTime.fromISO(typeof date === 'string' ? date : date.toISOString())
-    .setZone('utc')
-    .toFormat('yyyy-MM-dd');
-}
-
-export default Sidebar;
-
-export function UpdateNameForm() {
-  const { user } = useUser();
-  const [firstName, setFirstName] = useState(user?.firstName || '');
-  const [lastName, setLastName] = useState(user?.lastName || '');
-  const [message, setMessage] = useState('');
-
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    if (user) {
-      await user.update({ firstName, lastName });
-      setMessage('Name updated!');
-    }
-  };
-
-  return (
-    <form onSubmit={handleSubmit}>
-      <label>
-        First Name:
-        <input
-          value={firstName}
-          onChange={(e) => setFirstName(e.target.value)}
-        />
-      </label>
-      <label>
-        Last Name:
-        <input value={lastName} onChange={(e) => setLastName(e.target.value)} />
-      </label>
-      <button type="submit">Update Name</button>
-      {message && <p>{message}</p>}
-    </form>
-  );
-}
