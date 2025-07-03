@@ -35,7 +35,7 @@ const Sidebar = () => {
     <SidebarStyled theme={theme}>
       <div className="profile">
         <UserButton />
-        <h1>
+        <h1 className="capitalize">
           <span>{firstName || 'User'}</span>
           <span>{lastName || ''}</span>
         </h1>

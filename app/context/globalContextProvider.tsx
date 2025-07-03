@@ -35,6 +35,7 @@ interface GlobalContextType {
   completedTasks: Task[];
   important: Task[];
   incompleteTasks: Task[];
+  updateTask: (id: string, isCompleted: boolean) => Promise<void>;
 }
 
 interface GlobalContextProviderProps {
@@ -100,6 +101,22 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
     }
   };
 
+  const updateTask = async (
+    id: string,
+    isCompleted: boolean
+  ): Promise<void> => {
+    setIsLoading(true);
+    try {
+      const res = await axios.put(`/api/tasks`, { id, isCompleted });
+
+      toast.success('Task updated successfully');
+
+      allTasks();
+    } catch (error) {
+      console.error('Error updating task:', error);
+    }
+  };
+
   // Filter tasks
   const completedTasks = tasks.filter((task) => task.isCompleted === true);
   const important = tasks.filter((task) => task.isImportant === true);
@@ -124,6 +141,7 @@ export const GlobalContextProvider: React.FC<GlobalContextProviderProps> = ({
         tasks,
         deleteTask,
         allTasks,
+        updateTask,
         mounted,
         isLoading,
         completedTasks,

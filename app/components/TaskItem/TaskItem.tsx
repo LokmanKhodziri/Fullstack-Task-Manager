@@ -23,7 +23,7 @@ function TaskItem({
   important,
   id,
 }: Props) {
-  const { theme, deleteTask } = useGlobalState();
+  const { theme, deleteTask, updateTask } = useGlobalState();
   return (
     <TaskItemStyled theme={theme}>
       <h2>{title}</h2>
@@ -31,9 +31,16 @@ function TaskItem({
       <div className="date">{formatDate(date)}</div>
       <div className="task-footer">
         {isCompleted ? (
-          <button className="completed">Completed</button>
+          <button className="completed" onClick={() => updateTask(id, false)}>
+            Completed
+          </button>
         ) : (
-          <button className="not-completed">Not Completed</button>
+          <button
+            className="not-completed"
+            onClick={() => updateTask(id, true)}
+          >
+            Not Completed
+          </button>
         )}
         <button className="edit">{edit}</button>
         <button
