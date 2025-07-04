@@ -9,6 +9,7 @@ import { usePathname, useRouter } from 'next/navigation';
 import { DateTime } from 'luxon';
 import { logout } from '@/app/utils/Icons';
 import { useState } from 'react';
+import { FaBars, FaTimes } from 'react-icons/fa';
 
 import menu from '@/app/utils/menu';
 import Button from '../Button/Button';
@@ -16,6 +17,7 @@ import Button from '../Button/Button';
 const Sidebar = () => {
   const { theme, mounted } = useGlobalState();
   const { signOut } = useClerk();
+  const [sidebarOpen, setSidebarOpen] = useState(false);
 
   if (!mounted) return <div>Loading...</div>;
 
@@ -29,51 +31,70 @@ const Sidebar = () => {
 
   const handleClick = (link: string) => {
     router.push(link);
+    setSidebarOpen(false); // close sidebar on nav
   };
 
   return (
-    <SidebarStyled theme={theme}>
-      <div className="profile">
-        <UserButton />
-        <h1 className="capitalize">
-          <span>{firstName || 'User'}</span>
-          <span>{lastName || ''}</span>
-        </h1>
-      </div>
-      <ul className="nav-items">
-        {menu.map((item) => {
-          const link = item.link;
+    <>
+      <HamburgerButton
+        aria-label={sidebarOpen ? 'Close sidebar' : 'Open sidebar'}
+        onClick={() => setSidebarOpen((open) => !open)}
+      >
+        {sidebarOpen ? <FaTimes /> : <FaBars />}
+      </HamburgerButton>
+      {sidebarOpen && <SidebarOverlay onClick={() => setSidebarOpen(false)} />}
+      <SidebarStyled theme={theme} sidebarOpen={sidebarOpen}>
+        {/* Close button for mobile */}
+        {sidebarOpen && (
+          <SidebarCloseButton
+            aria-label="Close sidebar"
+            onClick={() => setSidebarOpen(false)}
+          >
+            <FaTimes />
+          </SidebarCloseButton>
+        )}
+        <div className="profile">
+          <UserButton />
+          <h1 className="capitalize">
+            <span>{firstName || 'User'}</span>
+            <span>{lastName || ''}</span>
+          </h1>
+        </div>
+        <ul className="nav-items">
+          {menu.map((item) => {
+            const link = item.link;
 
-          return (
-            <li
-              key={link}
-              className={`nav-item ${pathname === link ? 'active' : ''}`}
-              onClick={() => {
-                handleClick(item.link);
-              }}
-            >
-              {item.icon}
-              <Link href={link}>{item.title}</Link>
-            </li>
-          );
-        })}
-      </ul>
-      <div className="sign-out relative m-6">
-        <Button
-          name={'Sign Out'}
-          type={'submit'}
-          padding={'0.4rem 0.8rem'}
-          borderRadius={'0.8rem'}
-          fw={'500'}
-          icon={logout}
-          click={() => {
-            signOut(() => {
-              router.push('/sign-in');
-            });
-          }}
-        />
-      </div>
-    </SidebarStyled>
+            return (
+              <li
+                key={link}
+                className={`nav-item ${pathname === link ? 'active' : ''}`}
+                onClick={() => {
+                  handleClick(item.link);
+                }}
+              >
+                {item.icon}
+                <Link href={link}>{item.title}</Link>
+              </li>
+            );
+          })}
+        </ul>
+        <div className="sign-out relative m-6">
+          <Button
+            name={'Sign Out'}
+            type={'submit'}
+            padding={'0.4rem 0.8rem'}
+            borderRadius={'0.8rem'}
+            fw={'500'}
+            icon={logout}
+            click={() => {
+              signOut(() => {
+                router.push('/sign-in');
+              });
+            }}
+          />
+        </div>
+      </SidebarStyled>
+    </>
   );
 };
 
@@ -119,7 +140,21 @@ export function UpdateNameForm() {
   );
 }
 
-const SidebarStyled = styled.nav`
+const SidebarOverlay = styled.div`
+  display: none;
+  @media (max-width: 768px) {
+    display: block;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100vw;
+    height: 100vh;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 2000;
+  }
+`;
+
+const SidebarStyled = styled.nav<{ sidebarOpen?: boolean }>`
   position: relative;
   width: ${(props) => props.theme.sidebarWidth};
   background-color: ${(props) => props.theme.colorBg2};
@@ -133,6 +168,21 @@ const SidebarStyled = styled.nav`
   color: ${(props) => props.theme.colorGrey3};
   padding: 1rem 0;
   transition: all 0.3s ease;
+  z-index: 2002;
+
+  @media (max-width: 768px) {
+    position: fixed;
+    left: 0;
+    top: 0;
+    height: 100vh;
+    width: 75vw;
+    min-width: 180px;
+    max-width: 320px;
+    border-radius: 0 1rem 1rem 0;
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.08);
+    transform: translateX(${(props) => (props.sidebarOpen ? '0' : '-100%')});
+    transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+  }
 
   .profile {
     margin: 1.5rem;
@@ -144,7 +194,7 @@ const SidebarStyled = styled.nav`
     color: ${(props) => props.theme.colorGrey0};
     display: flex;
     align-items: center;
-    gap: 0.3rem
+    gap: 0.3rem;
     transition: all 0.3s ease;
 
     .cl-rootBox {
@@ -227,5 +277,75 @@ const SidebarStyled = styled.nav`
     &:hover {
       background-color: ${(props) => props.theme.colorBg2};
     }
+  }
+`;
+
+const SidebarCloseButton = styled.button`
+  display: none;
+  @media (max-width: 768px) {
+    display: flex;
+    position: absolute;
+    top: 1rem;
+    right: 1rem;
+    z-index: 2100;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: rgba(24, 24, 24, 0.95);
+    border: 2px solid #333;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    color: #ededed;
+    font-size: 1.5rem;
+    align-items: center;
+    justify-content: center;
+    transition:
+      background 0.2s,
+      color 0.2s,
+      box-shadow 0.2s;
+    cursor: pointer;
+  }
+  &:focus {
+    outline: 2px solid #1eff00;
+    outline-offset: 2px;
+  }
+  &:hover {
+    background: #232323;
+    color: #1eff00;
+    box-shadow: 0 4px 16px rgba(30, 255, 0, 0.08);
+  }
+`;
+
+const HamburgerButton = styled.button`
+  display: none;
+  position: fixed;
+  top: 1rem;
+  left: 1rem;
+  z-index: 2001;
+  width: 48px;
+  height: 48px;
+  border-radius: 50%;
+  background: rgba(24, 24, 24, 0.95);
+  border: 2px solid #333;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+  color: #ededed;
+  font-size: 2rem;
+  align-items: center;
+  justify-content: center;
+  transition:
+    background 0.2s,
+    color 0.2s,
+    box-shadow 0.2s;
+  cursor: pointer;
+  @media (max-width: 768px) {
+    display: flex;
+  }
+  &:focus {
+    outline: 2px solid #1eff00;
+    outline-offset: 2px;
+  }
+  &:hover {
+    background: #232323;
+    color: #1eff00;
+    box-shadow: 0 4px 16px rgba(30, 255, 0, 0.08);
   }
 `;

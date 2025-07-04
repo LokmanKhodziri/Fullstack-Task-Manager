@@ -109,55 +109,178 @@ function TaskItem({
 }
 
 const TaskItemStyled = styled.div`
-  padding: 1.2rem 1rem;
-  border-radius: 0.8rem;
+  padding: 1.5rem 1.2rem;
+  border-radius: 1rem;
   background-color: ${(props) => props.theme.borderColor2};
   box-shadow: ${(props) => props.theme.shadow7};
   border: 1px solid ${(props) => props.theme.borderColor2};
-  height: 16rem;
+  min-height: 15rem;
   display: flex;
   flex-direction: column;
-  gap: 1rem;
+  gap: 0.8rem;
+  margin-bottom: 1.2rem;
 
-  .date {
-    margin-top: auto;
+  > h1,
+  > h2 {
+    font-size: 1.35rem;
+    font-weight: 700;
+    word-break: break-word;
+    margin-bottom: 0.2rem;
+    color: ${(props) => props.theme.colorGrey0};
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
   }
 
-  > h1 {
-    font-size: 1.5rem;
-    font-weight: 600;
+  p {
+    word-break: break-word;
+    font-size: 1.05rem;
+    color: ${(props) => props.theme.colorGrey2};
+    margin-bottom: 0.2rem;
+  }
+
+  .date {
+    margin-top: 0.2rem;
+    font-size: 0.98rem;
+    color: ${(props) => props.theme.colorGrey3};
+    word-break: break-word;
   }
 
   .task-footer {
     display: flex;
     align-items: center;
-    gap: 1.2rem;
+    gap: 0.7rem;
+    flex-wrap: wrap;
+    margin-top: auto;
+    width: 100%;
+    justify-content: flex-start;
 
     button {
       border: none;
       outline: none;
       cursor: pointer;
-
-      i {
-        font-size: 1.4rem;
-        color: ${(props) => props.theme.colorGrey2};
-      }
+      min-width: 40px;
+      min-height: 38px;
+      font-size: 1.08rem;
+      padding: 0.45rem 1.1rem;
+      border-radius: 30px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 0.4rem;
+      transition:
+        background 0.2s,
+        color 0.2s,
+        box-shadow 0.2s;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.04);
+      margin-bottom: 0;
     }
 
     button.edit {
-      margin-left: auto;
+      background: #1e90ff22;
+      color: #1e90ff;
+      border: 1.5px solid #1e90ff44;
+      padding: 0.45rem 0.7rem;
+      font-size: 1.15rem;
+    }
+    button.edit:hover {
+      background: #1e90ff44;
+      color: #fff;
+    }
+
+    button.delete {
+      background: #ff222222;
+      color: #ff2222;
+      border: 1.5px solid #ff222244;
+      padding: 0.45rem 0.7rem;
+      font-size: 1.15rem;
+    }
+    button.delete:hover {
+      background: #ff222244;
+      color: #fff;
     }
 
     .completed,
     .not-completed {
-      display: inline-block;
-      padding: 0.4rem 1rem;
-      border-radius: 30px;
-      background-color: ${(props) => props.theme.colorDanger};
+      font-weight: 600;
+      border: 1.5px solid #2ecc4044;
+      color: #2ecc40;
+      background: #2ecc4022;
+      flex: 1 1 120px;
+      min-width: 120px;
+      justify-content: center;
+      font-size: 1.08rem;
+      padding: 0.45rem 0.7rem;
     }
-
     .completed {
       background-color: ${(props) => props.theme.colorGreenDark};
+      color: #fff;
+      border: 1.5px solid #2ecc40;
+    }
+    .not-completed {
+      background: #b0b0b0;
+      color: #fff;
+      border: 1.5px solid #b0b0b0;
+    }
+  }
+
+  @media (max-width: 900px) {
+    min-height: 12rem;
+    padding: 1.1rem 0.7rem;
+    border-radius: 0.8rem;
+    > h1,
+    > h2 {
+      font-size: 1.08rem;
+    }
+    p {
+      font-size: 0.98rem;
+    }
+    .date {
+      font-size: 0.85rem;
+    }
+  }
+
+  @media (max-width: 600px) {
+    width: 100%;
+    min-width: 0;
+    max-width: 100vw;
+    margin-bottom: 1rem;
+    padding: 0.7rem 0.5rem;
+    border-radius: 0.6rem;
+    box-shadow: ${(props) => props.theme.shadow7};
+    > h1,
+    > h2 {
+      font-size: 1.1rem;
+      gap: 0.3rem;
+    }
+    p {
+      font-size: 0.95rem;
+    }
+    .date {
+      font-size: 0.82rem;
+    }
+    .task-footer {
+      flex-direction: row;
+      align-items: center;
+      gap: 0.7rem;
+      margin-top: 0.7rem;
+      button.edit,
+      button.delete,
+      .completed,
+      .not-completed {
+        width: auto;
+        min-width: 0;
+        font-size: 1.08rem;
+        padding: 0.7rem 0.7rem;
+        border-radius: 0.6rem;
+        margin-bottom: 0;
+        justify-content: center;
+      }
+      button {
+        font-size: 1.15rem;
+        min-height: 48px;
+      }
     }
   }
 `;
