@@ -324,6 +324,39 @@ export async function DELETE(
 - Next.js 15 requires `params` to be awaited before accessing properties
 - Consider implementing proper error boundaries for better error handling across the app
 
+## 9. UI/UX Improvements: Responsive Layout, Consistent Cards, and Task Creation
+
+### Problem
+
+- The task grid and sidebar were not fully mobile responsive.
+- The "Add New Task" button appeared both at the bottom and as a + icon at the top, causing redundancy.
+- The "Add New Task" card did not match the size and style of other task cards, making the layout inconsistent.
+- The hamburger menu and task grid layout needed refinement for better usability across devices.
+
+### Solution
+
+1. **Responsive Task Grid:**
+   - Updated the grid to use `repeat(auto-fit, minmax(320px, 1fr))` for desktop, 2 columns for tablet, and 1 column for mobile.
+   - Removed restrictive max-width on desktop to allow more columns.
+2. **Consistent Card Sizing:**
+   - Ensured the "Add New Task" card uses the same min-height and styling as other task cards.
+   - Used `align-items: stretch` in the grid for uniform card heights.
+3. **Task Creation Button:**
+   - Removed the bottom "Add New Task" button for a cleaner UI.
+   - Added a prominent + button at the top right of the "My Tasks" section for easy access.
+4. **Hamburger Menu:**
+   - Restored the floating hamburger button style for mobile, ensuring it does not interfere with the content.
+5. **General UI Polish:**
+   - Improved padding, spacing, and hover effects for a modern, unified look.
+   - Ensured all layouts are visually consistent and user-friendly on desktop, tablet, and mobile.
+
+### Result
+
+- The app now provides a seamless, consistent experience across all devices.
+- Task cards and the add card are visually aligned and uniform.
+- Task creation is always accessible via the top + button.
+- The UI is cleaner, more modern, and easier to use.
+
 ## Best Practices Implemented
 
 1. **Error Handling**
